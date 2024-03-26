@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-from model.titanicmodel import dt, logreg, enc, cols
+from model.titanic import dt, logreg, enc, cols
 
 # Initialize a Flask application
 app = Flask(__name__)
