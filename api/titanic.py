@@ -6,8 +6,10 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import OneHotEncoder
 from flask_restful import Api, Resource
 from sklearn.linear_model import LogisticRegression
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 titanic_api = Blueprint('titanic_api', __name__, url_prefix='/api/titanic')
 api = Api(titanic_api)
 
