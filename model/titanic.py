@@ -5,6 +5,46 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+from __init__ import app, db
+from flask_sqlalchemy import SQLAlchemy
+from flask import Blueprint, jsonify, request  # Import the 'request' object
+from flask_restful import Api, Resource, reqparse
+from sqlalchemy import Column, Integer, String
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+class Titanic(db.Model):
+    id = Column(Integer, primary_key=True)  # Defines 'id' as a primary key
+    name = Column(String)
+    # add other columns as needed
+
+class Titanic(db.Model):  
+    __tablename__ = 'titanic'  
+
+db = SQLAlchemy()
+
+class TitanicPassenger(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    age = db.Column(db.String(120), nullable=False)
+    siblings_spouse = db.Column(db.String(120), nullable=False)
+    parents_children = db.Column(db.String(120), nullable=False)
+    fare = db.Column(db.Integer, nullable=False)
+    # Add other fields and methods as necessary
+
+# Then, in your post method:
+def post(self):
+    parser = reqparse.RequestParser()
+    parser.add_argument("_age", type=str, required=True, help="age is required")
+    # Add other arguments similarly
+    args = parser.parse_args()
+
+    new_passenger = TitanicPassenger(age=args["_age"], siblings_spouse=args["_siblings/spouse"], parents_children=args["_parents/children"], fare=args["_fare"])
+    db.session.add(new_passenger)
+    db.session.commit()
+
+    return jsonify(new_passenger.id), 201  # Or return any other appropriate response
+
 
 # Load the titanic dataset
 titanic_data = sns.load_dataset('titanic')

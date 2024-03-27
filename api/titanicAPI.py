@@ -1,16 +1,44 @@
 # Import necessary libraries for the web API, data manipulation, and machine learning
 from flask import Flask, request, jsonify, Blueprint
 import pandas as pd
+from flask_restful import Api, Resource, reqparse
+from __init__ import db
+from flask_cors import CORS
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-from model.titanic import dt, logreg, enc, cols
+from model.titanic import dt, logreg, enc, cols, titanic_data
 
-# Initialize a Flask application
-app = Flask(__name__)
 
 # Create a Blueprint for the Titanic API to structure your endpoints
 titanic_api = Blueprint('titanic_api', __name__, url_prefix='/api/titanic')
+
+api = Api(titanic_api)
+
+CORS(titanic_api)
+
+class titanicAPI(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("_age", type=str, required=True, help="age is required")
+        parser.add_argument("_siblings/spouse", type=str, required=True, help="siblings/spouse is required")
+        parser.add_argument("_parents/children", type=str, required=True, help="parents/childrens is required")
+        parser.add_argument("_fare", type=int, required=True, help="fare is required")
+    
+        args = parser.parse_args()
+
+        new_titanic = titanicAPI(_age=args["_age"], _siblings=args["_siblings/spouse"], _parent=args["_parents/children"], _fare=args["_fare"])
+        db.session.add(new_titanic)
+        db.session.commit()
+
+        return (new_titanic.to_dict()), 201
+    
+    def get(self, titanic_id=None):  # Add song_id as a parameter with a default value of None
+        if titanic_id is not None:
+            titanic = titanic.query.get(titanic_id)
+            if titanic:
+                return (titanic.to_dict())
+            return {"error": "surival chance not found"}, 404
 
 # Define a route for predicting survival on the Titanic using a POST request
 @titanic_api.route('/predict', methods=['POST'])
@@ -53,3 +81,5 @@ def predict():
 # This part ensures that the Flask app runs only if this script is executed directly
 if __name__ == '__main__':
     app.run(debug=True)  # Run the application with debug mode on
+
+api.add_resource(titanicAPI, '/', '/<int:titanic_id>', '/all') 
