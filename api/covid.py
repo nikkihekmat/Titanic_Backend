@@ -36,9 +36,6 @@ class PredictRiskLevel(Resource):
             data = request.get_json()
             country_data = pd.DataFrame([data])
             
-            # In a real scenario, preprocessing would be required similar to the Titanic example
-            # For simplicity, we assume data comes preprocessed and directly usable
-            
             # Predict the risk level for the provided country data
             risk_level_pred = logreg.predict(country_data)
             risk_level_proba = logreg.predict_proba(country_data)
